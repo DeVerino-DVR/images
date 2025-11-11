@@ -31,23 +31,41 @@ def convert_png_to_webp(directory="."):
                     
                     # CORRECTION: Remplacer les pixels transparents blancs par des pixels noirs transparents
                     # Cela évite l'affichage d'un fond blanc quand alpha < 255
+                    # Certains PNG ont des pixels blancs (255,255,255) avec alpha=0, ce qui crée un fond blanc visible
                     if img.mode == 'RGBA':
-                        # Créer une nouvelle image RGBA
-                        new_img = Image.new('RGBA', img.size, (0, 0, 0, 0))
-                        pixels = img.load()
-                        new_pixels = new_img.load()
-                        
-                        for y in range(img.size[1]):
-                            for x in range(img.size[0]):
-                                r, g, b, a = pixels[x, y]
-                                # Si le pixel est transparent (alpha < 255), mettre RGB à noir
-                                # Sinon, garder la couleur originale
-                                if a < 255:
-                                    new_pixels[x, y] = (0, 0, 0, a)  # Noir transparent
-                                else:
-                                    new_pixels[x, y] = (r, g, b, a)  # Couleur originale
-                        
-                        img = new_img
+                        try:
+                            # Méthode optimisée avec numpy (plus rapide)
+                            import numpy as np
+                            img_array = np.array(img)
+                            
+                            # Trouver les pixels transparents (alpha < 255)
+                            alpha_channel = img_array[:, :, 3]
+                            transparent_mask = alpha_channel < 255
+                            
+                            # Remplacer RGB par noir (0,0,0) pour les pixels transparents
+                            img_array[transparent_mask, 0] = 0  # R
+                            img_array[transparent_mask, 1] = 0  # G
+                            img_array[transparent_mask, 2] = 0  # B
+                            # Alpha reste inchangé
+                            
+                            # Reconvertir en Image PIL
+                            img = Image.fromarray(img_array, 'RGBA')
+                        except ImportError:
+                            # Fallback si numpy n'est pas disponible (méthode plus lente mais fonctionnelle)
+                            new_img = Image.new('RGBA', img.size, (0, 0, 0, 0))
+                            pixels = img.load()
+                            new_pixels = new_img.load()
+                            
+                            for y in range(img.size[1]):
+                                for x in range(img.size[0]):
+                                    r, g, b, a = pixels[x, y]
+                                    # Si le pixel est transparent (alpha < 255), mettre RGB à noir
+                                    if a < 255:
+                                        new_pixels[x, y] = (0, 0, 0, a)  # Noir transparent
+                                    else:
+                                        new_pixels[x, y] = (r, g, b, a)  # Couleur originale
+                            
+                            img = new_img
                     
                     # Sauvegarder en WebP avec une qualité élevée
                     # La transparence sera préservée automatiquement pour RGBA et LA
