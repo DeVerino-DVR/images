@@ -32,11 +32,11 @@ def convert_png_to_webp(directory="."):
                     # Sauvegarder en WebP avec une qualité élevée
                     # La transparence sera préservée automatiquement pour RGBA et LA
                     img.save(webp_path, 'WEBP', quality=85, method=6)
-                    print(f"✓ Converti: {png_path} -> {webp_path}")
+                    print(f"[OK] Converti: {png_path} -> {webp_path}")
                     converted_count += 1
                     
                 except Exception as e:
-                    print(f"✗ Erreur lors de la conversion de {png_path}: {str(e)}")
+                    print(f"[ERREUR] Erreur lors de la conversion de {png_path}: {str(e)}")
     
     if converted_count == 0:
         print("Aucune image PNG trouvée à convertir.")
