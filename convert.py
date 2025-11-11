@@ -31,7 +31,8 @@ def convert_png_to_webp(directory="."):
                     
                     # Sauvegarder en WebP avec une qualité élevée
                     # La transparence sera préservée automatiquement pour RGBA et LA
-                    img.save(webp_path, 'WEBP', quality=85, method=6)
+                    # Utiliser lossless=False pour forcer la compression et éviter les problèmes de cache
+                    img.save(webp_path, 'WEBP', quality=85, method=6, lossless=False)
                     print(f"[OK] Converti: {png_path} -> {webp_path}")
                     converted_count += 1
                     
