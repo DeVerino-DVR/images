@@ -20,20 +20,18 @@ def convert_png_to_webp(directory="."):
                     # Ouvrir l'image PNG
                     img = Image.open(png_path)
                     
-                    # Convertir en RGB si nécessaire (WebP ne supporte pas la transparence RGBA directement)
-                    if img.mode in ('RGBA', 'LA'):
-                        # Créer un fond blanc pour les images avec transparence
-                        background = Image.new('RGB', img.size, (255, 255, 255))
-                        if img.mode == 'RGBA':
-                            background.paste(img, mask=img.split()[3])  # Utiliser le canal alpha comme masque
-                        else:
-                            background.paste(img)
-                        img = background
-                    elif img.mode != 'RGB':
+                    # Préserver la transparence si présente (WebP supporte RGBA et LA)
+                    # Convertir seulement les modes qui ne supportent pas la transparence
+                    if img.mode == 'P':
+                        # Mode palette : convertir en RGBA pour préserver la transparence
+                        img = img.convert('RGBA')
+                    elif img.mode not in ('RGBA', 'LA', 'RGB', 'L'):
+                        # Convertir les autres modes en RGB
                         img = img.convert('RGB')
                     
                     # Sauvegarder en WebP avec une qualité élevée
-                    img.save(webp_path, 'WEBP', quality=85)
+                    # La transparence sera préservée automatiquement pour RGBA et LA
+                    img.save(webp_path, 'WEBP', quality=85, method=6)
                     print(f"✓ Converti: {png_path} -> {webp_path}")
                     converted_count += 1
                     
