@@ -5,6 +5,9 @@ def convert_png_to_webp(directory="."):
     """
     Convertit toutes les images PNG en WebP dans le répertoire spécifié
     et ses sous-répertoires.
+    
+    Les fichiers PNG originaux sont automatiquement supprimés après conversion réussie.
+    La transparence est préservée et les pixels blancs transparents sont corrigés.
     """
     converted_count = 0
     
@@ -71,7 +74,15 @@ def convert_png_to_webp(directory="."):
                     # La transparence sera préservée automatiquement pour RGBA et LA
                     # Utiliser lossless=False pour forcer la compression et éviter les problèmes de cache
                     img.save(webp_path, 'WEBP', quality=85, method=6, lossless=False)
-                    print(f"[OK] Converti: {png_path} -> {webp_path}")
+                    
+                    # Supprimer le fichier PNG original après conversion réussie
+                    try:
+                        os.remove(png_path)
+                        print(f"[OK] Converti et supprimé: {png_path} -> {webp_path}")
+                    except Exception as e:
+                        print(f"[OK] Converti: {png_path} -> {webp_path}")
+                        print(f"[AVERTISSEMENT] Impossible de supprimer {png_path}: {str(e)}")
+                    
                     converted_count += 1
                     
                 except Exception as e:
