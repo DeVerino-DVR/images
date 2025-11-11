@@ -1,0 +1,20 @@
+# Fichiers Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Environnements virtuels
+venv/
+env/
+ENV/
+
+# Fichiers temporaires
+*.tmp
+*.log
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
