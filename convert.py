@@ -29,6 +29,26 @@ def convert_png_to_webp(directory="."):
                         # Convertir les autres modes en RGB
                         img = img.convert('RGB')
                     
+                    # CORRECTION: Remplacer les pixels transparents blancs par des pixels noirs transparents
+                    # Cela évite l'affichage d'un fond blanc quand alpha < 255
+                    if img.mode == 'RGBA':
+                        # Créer une nouvelle image RGBA
+                        new_img = Image.new('RGBA', img.size, (0, 0, 0, 0))
+                        pixels = img.load()
+                        new_pixels = new_img.load()
+                        
+                        for y in range(img.size[1]):
+                            for x in range(img.size[0]):
+                                r, g, b, a = pixels[x, y]
+                                # Si le pixel est transparent (alpha < 255), mettre RGB à noir
+                                # Sinon, garder la couleur originale
+                                if a < 255:
+                                    new_pixels[x, y] = (0, 0, 0, a)  # Noir transparent
+                                else:
+                                    new_pixels[x, y] = (r, g, b, a)  # Couleur originale
+                        
+                        img = new_img
+                    
                     # Sauvegarder en WebP avec une qualité élevée
                     # La transparence sera préservée automatiquement pour RGBA et LA
                     # Utiliser lossless=False pour forcer la compression et éviter les problèmes de cache
