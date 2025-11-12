@@ -1,7 +1,7 @@
-# Script PowerShell pour pousser les fichiers WebP dans une branche GitHub
+# Script PowerShell pour pousser les fichiers WebP dans la branche main (structure comme DeVerino-DVR/images)
 
 $repoPath = Get-Location
-$branchName = "webp"
+$branchName = "main"
 
 Write-Host "Répertoire de travail: $repoPath" -ForegroundColor Cyan
 
@@ -9,22 +9,21 @@ Write-Host "Répertoire de travail: $repoPath" -ForegroundColor Cyan
 if (-not (Test-Path ".git")) {
     Write-Host "Initialisation du dépôt Git..." -ForegroundColor Yellow
     git init
-    git remote add origin https://github.com/jbaliveagain/fivem-clothes-images.git
+    git remote add origin https://github.com/DeVerino-DVR/images.git
 }
 
 # Vérifier le remote
 Write-Host "`nVérification du remote..." -ForegroundColor Cyan
 git remote -v
 
-# Créer ou basculer sur la branche webp
-Write-Host "`nCréation/basculement sur la branche '$branchName'..." -ForegroundColor Cyan
-$branchExists = git branch -a | Select-String -Pattern $branchName
+# Basculer sur la branche main
+Write-Host "`nBasculement sur la branche '$branchName'..." -ForegroundColor Cyan
+$branchExists = git branch -a | Select-String -Pattern "main"
 if ($branchExists) {
-    Write-Host "La branche existe déjà, basculement..." -ForegroundColor Yellow
-    git checkout $branchName
+    git checkout main
 } else {
-    Write-Host "Création de la nouvelle branche..." -ForegroundColor Yellow
-    git checkout -b $branchName
+    Write-Host "Création de la branche main..." -ForegroundColor Yellow
+    git checkout -b main
 }
 
 # Ajouter les fichiers WebP du dossier webp
@@ -50,7 +49,8 @@ if ($status) {
     git push -u origin $branchName
     
     Write-Host "`n✓ Terminé! Les fichiers WebP sont disponibles sur la branche '$branchName'" -ForegroundColor Green
-    Write-Host "URL raw: https://raw.githubusercontent.com/jbaliveagain/fivem-clothes-images/$branchName/webp/" -ForegroundColor Green
+    Write-Host "URL raw: https://raw.githubusercontent.com/DeVerino-DVR/images/main/webp" -ForegroundColor Green
+    Write-Host "Exemple fichier: https://raw.githubusercontent.com/DeVerino-DVR/images/main/webp/female_1_0.webp" -ForegroundColor Green
 } else {
-    Write-Host "Aucun changement à commiter." -ForegroundColor Yellow
+    Write-Host 'Aucun changement a commiter.' -ForegroundColor Yellow
 }
